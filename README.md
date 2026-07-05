@@ -162,10 +162,10 @@ Vibe-Research 用到的数据 / 工具，来自同一套自研开源体系（都
 
 ## 📬 联系作者
 
-作者 **Simon** —— 独立开发者，长期做「用 AI 做投研」的方法与工具。
+作者 **Simon**，独立开发者。
 
 - 🌐 主页：<https://www.simonlin.net>
-- 💬 用 AI 搭投研系统的完整思路、更多开源工具，都在主页；也欢迎交流企业 AI 落地。
+- 💬 欢迎交流**企业 AI 落地方案**；项目相关问题也可提 [Issue](https://github.com/simonlin1212/Vibe-Research/issues)。
 
 ## 🙏 致谢
 
