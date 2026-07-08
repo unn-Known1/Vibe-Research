@@ -46,26 +46,26 @@ export const PROVIDER_BASE: Partial<Record<ProviderId, string>> = {
 };
 
 export const aiModels: ModelConfig[] = [
-  // —— 订阅版（免 API key，调本机已登录的 CLI）——
-  { id: "claude-code", name: "Claude Code", description: "用本机 Claude 订阅", provider: "cli-claude" },
-  { id: "qwen-code", name: "Qwen Code", description: "通义 Qwen Code 订阅", provider: "cli-qwen" },
-  { id: "deepseek-cli", name: "DeepSeek CLI", description: "DeepSeek 本机 CLI 订阅", provider: "cli-deepseek" },
-  { id: "codex", name: "Codex", description: "OpenAI Codex 订阅（需 codex login 登录）", provider: "cli-codex" },
-  { id: "opencode", name: "OpenCode", description: "OpenCode 订阅", provider: "cli-opencode", comingSoon: true },
-  { id: "cursor-agent", name: "Cursor Agent", description: "Cursor Agent 订阅", provider: "cli-cursor", comingSoon: true },
-  { id: "kimi", name: "Kimi", description: "Kimi 订阅", provider: "cli-kimi", comingSoon: true },
-  // —— API 版（填自己的 key）——
-  { id: "deepseek-v4-flash", name: "DeepSeek V4 Flash", description: "DeepSeek 官方 · 快而省 · 思考/非思考双模", provider: "deepseek" },
-  { id: "deepseek-v4-pro", name: "DeepSeek V4 Pro", description: "DeepSeek 官方 · 旗舰 · 最强推理", provider: "deepseek" },
-  { id: "deepseek-ai/DeepSeek-V3", name: "SiliconFlow · DeepSeek V3", description: "硅基流动", provider: "silicon" },
+  // Subscription (use local CLI, no API key)
+  { id: "claude-code", name: "Claude Code", description: "Use local Claude subscription", provider: "cli-claude" },
+  { id: "qwen-code", name: "Qwen Code", description: "Qwen Code subscription", provider: "cli-qwen" },
+  { id: "deepseek-cli", name: "DeepSeek CLI", description: "DeepSeek local CLI subscription", provider: "cli-deepseek" },
+  { id: "codex", name: "Codex", description: "OpenAI Codex subscription (requires codex login)", provider: "cli-codex" },
+  { id: "opencode", name: "OpenCode", description: "OpenCode subscription", provider: "cli-opencode", comingSoon: true },
+  { id: "cursor-agent", name: "Cursor Agent", description: "Cursor Agent subscription", provider: "cli-cursor", comingSoon: true },
+  { id: "kimi", name: "Kimi", description: "Kimi subscription", provider: "cli-kimi", comingSoon: true },
+  // API (bring your own key)
+  { id: "deepseek-v4-flash", name: "DeepSeek V4 Flash", description: "DeepSeek official, fast & affordable, thinking/non-thinking dual mode", provider: "deepseek" },
+  { id: "deepseek-v4-pro", name: "DeepSeek V4 Pro", description: "DeepSeek official, flagship, strongest reasoning", provider: "deepseek" },
+  { id: "deepseek-ai/DeepSeek-V3", name: "SiliconFlow · DeepSeek V3", description: "SiliconFlow", provider: "silicon" },
   { id: "gpt-4o", name: "OpenAI GPT-4o", description: "OpenAI", provider: "openai" },
-  { id: "MiniMax-M2", name: "MiniMax M2", description: "MiniMax 海螺", provider: "minimax" },
-  { id: "doubao-pro", name: "豆包 Pro", description: "火山方舟 · 填推理接入点 ID(ep-…)", provider: "openai-compatible" },
-  { id: "openai/gpt-4o", name: "OpenRouter · GPT-4o", description: "OpenRouter 聚合（可改任意模型 id）", provider: "openrouter" },
-  { id: "llama-3.3-70b-versatile", name: "Groq · Llama 3.3 70B", description: "Groq 超快推理", provider: "groq" },
+  { id: "MiniMax-M2", name: "MiniMax M2", description: "MiniMax", provider: "minimax" },
+  { id: "doubao-pro", name: "Doubao Pro", description: "Volcano Engine, fill inference endpoint ID (ep-...)", provider: "openai-compatible" },
+  { id: "openai/gpt-4o", name: "OpenRouter · GPT-4o", description: "OpenRouter aggregator (any model ID)", provider: "openrouter" },
+  { id: "llama-3.3-70b-versatile", name: "Groq · Llama 3.3 70B", description: "Groq ultra-fast inference", provider: "groq" },
   { id: "meta-llama/Llama-3.3-70B-Instruct-Turbo", name: "Together · Llama 3.3 70B", description: "Together AI", provider: "together" },
-  { id: "mimo-v2.5-pro", name: "MiMo V2.5 Pro", description: "小米 MiMo（需自有网关）", provider: "mimo" },
-  { id: "custom", name: "其它 OpenAI 兼容", description: "任意兼容端点，自填 baseURL/model", provider: "openai-compatible" },
+  { id: "mimo-v2.5-pro", name: "MiMo V2.5 Pro", description: "Xiaomi MiMo (requires custom gateway)", provider: "mimo" },
+  { id: "custom", name: "Other OpenAI Compatible", description: "Any compatible endpoint, fill baseURL/model", provider: "openai-compatible" },
 ];
 
 export const subscriptionModels = aiModels.filter((m) => isCliProvider(m.provider));
