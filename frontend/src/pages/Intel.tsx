@@ -162,7 +162,7 @@ function InvestmentNewsPanel() {
                   <p className="py-6 text-center text-sm text-muted-foreground/60">近 {data!.recent_days} 天该赛道暂无更新</p>
                 ) : (
                   cur.items.map((it, i) => (
-                    <a key={i} href={it.url} target="_blank" rel="noreferrer"
+                    <a key={`${it.source}-${it.time}-${i}`} href={it.url} target="_blank" rel="noreferrer"
                       className="group flex items-baseline gap-3 border-b border-border/30 pb-2 text-sm last:border-0">
                       <span className="w-24 shrink-0 font-mono text-xs text-muted-foreground/70">{it.time}</span>
                       <span className="w-20 shrink-0 truncate text-xs text-muted-foreground">{it.source}</span>
@@ -282,7 +282,7 @@ function WatchlistFeed({ kind }: { kind: "filings" | "news" }) {
       ) : (
         <div className="space-y-2">
           {rows.map((r, i) => (
-            <a key={i} href={r.url || undefined} target={r.url ? "_blank" : undefined} rel="noreferrer"
+            <a key={`${r.code}-${r.when}-${i}`} href={r.url || undefined} target={r.url ? "_blank" : undefined} rel="noreferrer"
               className={cn("group flex items-baseline gap-3 border-b border-border/30 pb-2 text-sm last:border-0", r.url && "cursor-pointer")}>
               <span className="w-20 shrink-0 font-mono text-xs text-muted-foreground/70">{(r.when || "").slice(kind === "filings" ? 0 : 5, kind === "filings" ? 10 : 16)}</span>
               <span className="w-16 shrink-0 truncate text-xs text-primary/90" title={r.code}>{r.name}</span>
