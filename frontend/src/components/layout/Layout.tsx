@@ -5,39 +5,44 @@ import {
   Moon, Sun, ChevronsLeft, ChevronsRight, LineChart, Github, UserRound,
   Cog, Cpu, Database, Cable, Rocket, FlaskConical, Star, FileText,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 import { useDarkMode } from "@/hooks/useDarkMode";
+import { setLanguage } from "@/i18n";
 
 const APP_VERSION = "v0.1.1";
 const REPO_URL = "https://github.com/simonlin1212/Vibe-Research";
-const SITE_URL = "https://www.simonlin.net"; // 作者主页
+const SITE_URL = "https://www.simonlin.net";
 
-const NAV = [
-  { to: "/daily-review", icon: Activity, label: "每日复盘" },
-  { to: "/intel", icon: Radar, label: "资讯雷达" },
-  { to: "/sectors", icon: LayoutGrid, label: "板块中心" },
-  { to: "/stock-data", icon: Search, label: "个股数据" },
-  { to: "/watchlist", icon: Star, label: "自选股" },
-  { to: "/portfolio", icon: Wallet, label: "我的持仓" },
-  { to: "/my-reports", icon: FileText, label: "我的研报" },
-  { to: "/notes", icon: NotebookPen, label: "研究记录" },
-  { to: "/settings", icon: Settings, label: "接入 AI" },
+const NAV_KEYS = [
+  { to: "/daily-review", icon: Activity, key: "dailyReview" },
+  { to: "/intel", icon: Radar, key: "intel" },
+  { to: "/sectors", icon: LayoutGrid, key: "sectors" },
+  { to: "/stock-data", icon: Search, key: "stockData" },
+  { to: "/watchlist", icon: Star, key: "watchlist" },
+  { to: "/portfolio", icon: Wallet, key: "portfolio" },
+  { to: "/my-reports", icon: FileText, key: "myReports" },
+  { to: "/notes", icon: NotebookPen, key: "notes" },
+  { to: "/settings", icon: Settings, key: "settings" },
 ];
 
-// 常看的板块，作为「板块中心」下的快捷入口（缩进显示）。
-const SECTOR_LINKS = [
-  { to: "/sectors/humanoid", icon: Cog, label: "人形机器人" },
-  { to: "/sectors/ai-computing", icon: Cpu, label: "AI 算力" },
-  { to: "/sectors/hbm", icon: Database, label: "HBM" },
-  { to: "/sectors/cpo", icon: Cable, label: "光互联" },
-  { to: "/sectors/business-space", icon: Rocket, label: "商业航天" },
-  { to: "/sectors/ai-pharma", icon: FlaskConical, label: "生物医药" },
+const SECTOR_KEYS = [
+  { to: "/sectors/humanoid", icon: Cog, key: "humanoid" },
+  { to: "/sectors/ai-computing", icon: Cpu, key: "aiComputing" },
+  { to: "/sectors/hbm", icon: Database, key: "hbm" },
+  { to: "/sectors/cpo", icon: Cable, key: "cpo" },
+  { to: "/sectors/business-space", icon: Rocket, key: "businessSpace" },
+  { to: "/sectors/ai-pharma", icon: FlaskConical, key: "aiPharma" },
 ];
 
 export function Layout() {
   const { pathname } = useLocation();
   const { dark, toggle } = useDarkMode();
+  const { t, i18n } = useTranslation();
   const [collapsed, setCollapsed] = useState(() => localStorage.getItem("vr-sidebar") === "collapsed");
+
+  const isZh = i18n.language === "zh";
+  const toggleLang = () => setLanguage(isZh ? "en" : "zh");
 
   useEffect(() => {
     localStorage.setItem("vr-sidebar", collapsed ? "collapsed" : "expanded");
@@ -60,13 +65,14 @@ export function Layout() {
               </span>
             )}
           </Link>
-          {!collapsed && <p className="mt-1 text-[11px] text-muted-foreground">个人 AI 投研系统 · A股/美股/港股</p>}
+          {!collapsed && <p className="mt-1 text-[11px] text-muted-foreground">{t("sidebar.tagline")}</p>}
         </div>
 
         {/* Nav */}
         <nav className={cn("flex-1 space-y-1 overflow-auto", collapsed ? "p-1.5" : "p-2.5")}>
-          {NAV.map(({ to, icon: Icon, label }) => {
+          {NAV_KEYS.map(({ to, icon: Icon, key }) => {
             const active = pathname === to;
+            const label = t(`sidebar.nav.${key}`);
             return (
               <div key={to}>
                 <Link
@@ -84,11 +90,11 @@ export function Layout() {
                   {!collapsed && label}
                 </Link>
 
-                {/* 板块中心下方：常看板块的快捷入口（缩进） */}
                 {to === "/sectors" && (
                   <div className={cn("mt-1 space-y-0.5", !collapsed && "ml-4 border-l border-border/40 pl-1.5")}>
-                    {SECTOR_LINKS.map(({ to: st, icon: SIcon, label: slabel }) => {
+                    {SECTOR_KEYS.map(({ to: st, icon: SIcon, key: skey }) => {
                       const sactive = pathname === st;
+                      const slabel = t(`sidebar.sectors.${skey}`);
                       return (
                         <Link
                           key={st}
@@ -118,13 +124,16 @@ export function Layout() {
         <div className={cn("border-t border-border/50", collapsed ? "flex flex-col items-center gap-2 p-2" : "space-y-2 p-3")}>
           {collapsed ? (
             <>
-              <button onClick={toggle} className="rounded p-1.5 text-muted-foreground transition-colors hover:text-foreground" title={dark ? "亮色" : "暗色"}>
+              <button onClick={toggle} className="rounded p-1.5 text-muted-foreground transition-colors hover:text-foreground" title={dark ? t("sidebar.theme.light") : t("sidebar.theme.dark")}>
                 {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
               </button>
-              <a href={SITE_URL} target="_blank" rel="noreferrer" className="rounded p-1.5 text-muted-foreground transition-colors hover:text-foreground" title="联系作者">
+              <button onClick={toggleLang} className="rounded p-1.5 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground" title={t("sidebar.lang.toggle")}>
+                {isZh ? "EN" : "中"}
+              </button>
+              <a href={SITE_URL} target="_blank" rel="noreferrer" className="rounded p-1.5 text-muted-foreground transition-colors hover:text-foreground" title={t("sidebar.contact")}>
                 <UserRound className="h-4 w-4" />
               </a>
-              <button onClick={() => setCollapsed(false)} className="rounded p-1.5 text-muted-foreground transition-colors hover:text-foreground" title="展开">
+              <button onClick={() => setCollapsed(false)} className="rounded p-1.5 text-muted-foreground transition-colors hover:text-foreground" title={t("sidebar.expand")}>
                 <ChevronsRight className="h-4 w-4" />
               </button>
             </>
@@ -133,25 +142,28 @@ export function Layout() {
               <div className="flex items-center justify-between">
                 <button onClick={toggle} className="flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground">
                   {dark ? <Sun className="h-3.5 w-3.5" /> : <Moon className="h-3.5 w-3.5" />}
-                  {dark ? "亮色" : "暗色"}
+                  {dark ? t("sidebar.theme.light") : t("sidebar.theme.dark")}
                 </button>
                 <div className="flex items-center gap-2">
-                  <a href={SITE_URL} target="_blank" rel="noreferrer" className="text-muted-foreground transition-colors hover:text-foreground" title="联系作者">
+                  <button onClick={toggleLang} className="rounded px-1.5 py-0.5 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground" title={t("sidebar.lang.toggle")}>
+                    {isZh ? "EN" : "中文"}
+                  </button>
+                  <a href={SITE_URL} target="_blank" rel="noreferrer" className="text-muted-foreground transition-colors hover:text-foreground" title={t("sidebar.contact")}>
                     <UserRound className="h-3.5 w-3.5" />
                   </a>
                   <a href={REPO_URL} target="_blank" rel="noreferrer" className="text-muted-foreground transition-colors hover:text-foreground" title="GitHub">
                     <Github className="h-3.5 w-3.5" />
                   </a>
-                  <button onClick={() => setCollapsed(true)} className="rounded p-1 text-muted-foreground transition-colors hover:text-foreground" title="收起">
+                  <button onClick={() => setCollapsed(true)} className="rounded p-1 text-muted-foreground transition-colors hover:text-foreground" title={t("sidebar.collapse")}>
                     <ChevronsLeft className="h-3.5 w-3.5" />
                   </button>
                 </div>
               </div>
               <a href={SITE_URL} target="_blank" rel="noreferrer" className="block text-[11px] text-primary/80 transition-colors hover:text-primary">
-                联系作者 · simonlin.net
+                {t("sidebar.contact")} · simonlin.net
               </a>
               <p className="text-[11px] leading-relaxed text-muted-foreground/60">
-                {APP_VERSION} · 不荐股 · 不预测 · 无倾向
+                {APP_VERSION} · {t("sidebar.disclaimer")}
               </p>
             </>
           )}

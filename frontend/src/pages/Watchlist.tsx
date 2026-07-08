@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from 'react-i18next';
 import { Plus, X, RefreshCw, Star } from "lucide-react";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { GlassCard } from "@/components/ui/GlassCard";
@@ -14,6 +15,7 @@ const color = (v: number | undefined) =>
 const pct = (v: number | undefined) => (v == null ? "—" : `${v > 0 ? "+" : ""}${v}%`);
 
 export function Watchlist() {
+  const { t } = useTranslation();
   const [codes, setCodes] = useState<string[]>(loadWatch);
   const [quotes, setQuotes] = useState<Record<string, Quote>>({});
   const [input, setInput] = useState("");
@@ -30,11 +32,11 @@ export function Watchlist() {
   const add = () => {
     const { next, added } = addCodes(codes, input);
     if (added === 0) {
-      setHint(input.trim() ? "没识别到新的 6 位代码（可能已在自选里）" : null);
+      setHint(input.trim() ? t('watchlist.noNewCode') : null);
       setInput("");
       return;
     }
-    setCodes(next); saveWatch(next); setInput(""); setHint(`已添加 ${added} 只`);
+    setCodes(next); saveWatch(next); setInput(""); setHint(t('watchlist.addedCount', { count: added }));
     refresh(next);
   };
   const remove = (c: string) => {
@@ -61,14 +63,14 @@ export function Watchlist() {
   return (
     <div>
       <PageHeader
-        title="自选股"
-        subtitle="批量添加、一屏总览你关注的标的。数据只存本地、不上传。"
+        title={t('watchlist.title')}
+        subtitle={t('watchlist.subtitle')}
         actions={
           codes.length > 0 && (
             <AskAiButton
               context={aiContext}
-              label="让 AI 读自选"
-              suggestions={["这几只里哪些估值偏高", "帮我按赛道分组看看", "各自最大的风险点是什么"]}
+              label={t('watchlist.askAiLabel')}
+              suggestions={[t('watchlist.suggestions.valuation'), t('watchlist.suggestions.group'), t('watchlist.suggestions.risks')]}
             />
           )
         }
@@ -76,7 +78,7 @@ export function Watchlist() {
 
       <GlassCard className="mb-4">
         <label className="mb-1.5 block text-xs text-muted-foreground">
-          批量添加 —— 粘贴一串代码即可（逗号 / 空格 / 换行都行，自动识别 6 位 A 股代码）
+          {t('watchlist.addHint')}
         </label>
         <div className="flex gap-2">
           <textarea
@@ -86,14 +88,14 @@ export function Watchlist() {
               if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) add();
             }}
             rows={2}
-            placeholder={"如：600519 000858, 002463\n300750 688017"}
+            placeholder={t('watchlist.addPlaceholder')}
             className="flex-1 resize-y rounded-lg border border-border bg-black/20 px-3 py-2 text-sm outline-none focus:border-primary/50"
           />
           <button
             onClick={add}
             className="inline-flex h-9 shrink-0 items-center gap-1.5 self-start rounded-lg bg-primary/15 px-4 text-sm font-medium text-primary shadow-glow hover:bg-primary/25"
           >
-            <Plus className="h-4 w-4" /> 添加
+            <Plus className="h-4 w-4" /> {t('watchlist.add')}
           </button>
         </div>
         {hint && <p className="mt-2 text-xs text-muted-foreground/70">{hint}</p>}
@@ -102,28 +104,28 @@ export function Watchlist() {
       <GlassCard glow>
         <div className="mb-2 flex items-center justify-between">
           <h3 className="flex items-center gap-1.5 font-semibold">
-            <Star className="h-4 w-4 text-primary" /> 自选总览
+            <Star className="h-4 w-4 text-primary" /> {t('watchlist.overview.title')}
             <span className="text-xs font-normal text-muted-foreground">（{codes.length}）</span>
           </h3>
           <button
             onClick={() => refresh(codes)}
             disabled={loading}
             className="text-muted-foreground hover:text-primary"
-            title="刷新价格"
+            title={t('common.buttons.refresh')}
           >
             <RefreshCw className={cn("h-3.5 w-3.5", loading && "animate-spin")} />
           </button>
         </div>
         {codes.length === 0 ? (
           <p className="py-8 text-center text-sm text-muted-foreground/60">
-            还没有自选股，用上面的框粘贴一串代码批量添加。
+            {t('watchlist.overview.emptyHint')}
           </p>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-border/50 text-left text-xs text-muted-foreground">
-                  {["名称", "代码", "现价", "涨跌%", "PE(TTM)", "PB", "换手%", ""].map((h) => (
+                  {[t('watchlist.overview.name'), t('watchlist.overview.code'), t('watchlist.overview.price'), t('watchlist.overview.changePct'), t('watchlist.overview.peTtm'), t('watchlist.overview.pb'), t('watchlist.overview.turnoverPct'), ""].map((h) => (
                     <th key={h} className="whitespace-nowrap px-2 py-2 font-medium">
                       {h}
                     </th>
@@ -146,7 +148,7 @@ export function Watchlist() {
                         <button
                           onClick={() => remove(c)}
                           className="text-muted-foreground/50 hover:text-destructive"
-                          title="移除"
+                          title={t('watchlist.overview.remove')}
                         >
                           <X className="h-3.5 w-3.5" />
                         </button>

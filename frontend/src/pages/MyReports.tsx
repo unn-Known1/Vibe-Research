@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Upload, FileText, Trash2, Download, Loader2, FolderOpen } from "lucide-react";
 import { PageHeader } from "@/components/ui/PageHeader";
@@ -21,6 +22,7 @@ const fileToB64 = (file: File): Promise<string> =>
   });
 
 export function MyReports() {
+  const { t } = useTranslation();
   const [reports, setReports] = useState<MyReport[]>([]);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
@@ -31,7 +33,7 @@ export function MyReports() {
     try {
       setReports(await api.myReports());
     } catch (e) {
-      setErr(e instanceof ApiError ? e.message : "加载研报列表失败");
+      setErr(e instanceof ApiError ? e.message : t('reports.errors.loadFailed'));
     }
   };
   useEffect(() => {
@@ -48,19 +50,19 @@ export function MyReports() {
       }
       await load();
     } catch (e) {
-      setErr(e instanceof ApiError ? e.message : "上传失败");
+      setErr(e instanceof ApiError ? e.message : t('reports.errors.uploadFailed'));
     } finally {
       setBusy(false);
     }
   };
 
   const remove = async (r: MyReport) => {
-    if (!confirm(`删除「${r.name}」？（同时从本地归档目录移除）`)) return;
+    if (!confirm(t('reports.deleteConfirm', { name: r.name }))) return;
     try {
       await api.deleteReport(r.id);
       await load();
     } catch (e) {
-      setErr(e instanceof ApiError ? e.message : "删除失败");
+      setErr(e instanceof ApiError ? e.message : t('reports.errors.deleteFailed'));
     }
   };
 
@@ -68,7 +70,7 @@ export function MyReports() {
     try {
       await downloadReport(r.id, r.name);
     } catch (e) {
-      setErr(e instanceof ApiError ? e.message : "下载失败");
+      setErr(e instanceof ApiError ? e.message : t('reports.errors.downloadFailed'));
     }
   };
 
@@ -77,15 +79,15 @@ export function MyReports() {
     for (const r of reports) (g[r.industry] ||= []).push(r);
     // 「未分类」排最后，其余按条数多→少
     return Object.entries(g).sort((a, b) =>
-      a[0] === "未分类" ? 1 : b[0] === "未分类" ? -1 : b[1].length - a[1].length,
+      a[0] === t('reports.uncategorized') ? 1 : b[0] === t('reports.uncategorized') ? -1 : b[1].length - a[1].length,
     );
-  }, [reports]);
+  }, [reports, t]);
 
   return (
     <div>
       <PageHeader
-        title="我的研报"
-        subtitle="把自己的研报拖进来归档，自动按行业分类。文件只存在本地部署目录、不上传、不进任何仓库。"
+        title={t('reports.title')}
+        subtitle={t('reports.subtitle')}
       />
 
       {/* 上传区 */}
@@ -113,10 +115,10 @@ export function MyReports() {
             <Upload className="h-7 w-7 text-primary" />
           )}
           <p className="text-sm font-medium">
-            {busy ? "上传中…" : "把研报拖到这里，或点击选择文件"}
+            {busy ? t('common.statuses.uploading') : t('reports.uploadHint')}
           </p>
           <p className="text-xs text-muted-foreground/70">
-            支持 PDF / Word / txt / md / 表格 / 图片，单个 ≤ 25MB，可一次多选
+            {t('reports.supportedFormats')}
           </p>
           <input
             ref={inputRef}
@@ -143,7 +145,7 @@ export function MyReports() {
         <GlassCard>
           <div className="flex flex-col items-center gap-2 py-10 text-center text-sm text-muted-foreground">
             <FolderOpen className="h-8 w-8 text-muted-foreground/40" />
-            还没有归档的研报。把你收集的研报拖进上面的框，会自动按行业分好类。
+            {t('reports.emptyHint')}
           </div>
         </GlassCard>
       ) : (
@@ -152,7 +154,7 @@ export function MyReports() {
             <GlassCard key={industry}>
               <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold">
                 <span className="rounded bg-primary/15 px-2 py-0.5 text-xs text-primary">{industry}</span>
-                <span className="text-xs font-normal text-muted-foreground">{items.length} 份</span>
+                <span className="text-xs font-normal text-muted-foreground">{t('common.formats.count', { count: items.length })}</span>
               </h3>
               <div className="divide-y divide-border/30">
                 {items.map((r) => (
@@ -167,14 +169,14 @@ export function MyReports() {
                     <button
                       onClick={() => download(r)}
                       className="shrink-0 text-muted-foreground/60 hover:text-primary"
-                      title="下载"
+                      title={t('common.buttons.download')}
                     >
                       <Download className="h-4 w-4" />
                     </button>
                     <button
                       onClick={() => remove(r)}
                       className="shrink-0 text-muted-foreground/50 hover:text-destructive"
-                      title="删除"
+                      title={t('common.buttons.delete')}
                     >
                       <Trash2 className="h-3.5 w-3.5" />
                     </button>

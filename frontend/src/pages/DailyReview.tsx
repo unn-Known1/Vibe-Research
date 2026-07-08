@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from 'react-i18next';
 import { Link } from "react-router-dom";
 import { Sparkles, Loader2, AlertCircle, RefreshCw, Gauge, ArrowDownUp, TrendingUp, TrendingDown, Plus, X, Flame, BarChart3, Globe } from "lucide-react";
 import ReactMarkdown from "react-markdown";
@@ -12,14 +13,16 @@ import { hasLlm, chatStream } from "@/lib/llm";
 import { SaveNoteButton } from "@/components/ui/SaveNoteButton";
 import { loadWatch, saveWatch, addCodes } from "@/lib/watchlist";
 import { cn } from "@/lib/utils";
+import i18n from "@/i18n";
 
 // A股红涨绿跌。全球市场（美股/港股指数）**也沿用红涨**——与整个看板及东财等中国平台一致，
 // 对中国用户最不易看错（Simon 2026-07-05 确认；非国际绿涨惯例，是有意选择，勿改）。
 const pctColor = (p: number) => (p > 0 ? "text-danger" : p < 0 ? "text-success" : "text-muted-foreground");
-const fmt = (v: number) => v.toLocaleString("zh-CN", { maximumFractionDigits: 2 });
-const yi = (v: number | null) => (v == null ? "—" : `${fmt(v / 1e8)} 亿`); // 元 → 亿
+const fmt = (v: number) => v.toLocaleString(i18n.language === 'zh' ? 'zh-CN' : 'en-US', { maximumFractionDigits: 2 });
+const yi = (v: number | null) => (v == null ? "—" : `${fmt(v / 1e8)} ${i18n.t('common.formats.billionChinese')}`);
 
 export function DailyReview() {
+  const { t } = useTranslation();
   const [indices, setIndices] = useState<IndexQuote[]>([]);
   const [idxErr, setIdxErr] = useState(false);
   const [review, setReview] = useState("");
@@ -52,7 +55,7 @@ export function DailyReview() {
   // 数据块占位：请求没回来 = 加载中；回来了但为空 = 数据源暂不可用（别让用户干等）
   const pending = (done: boolean) => (
     <p className="py-4 text-center text-sm text-muted-foreground/60">
-      {done ? "暂无数据：可能是非交易时段或数据源暂时不可用，可点「大盘指数」旁的刷新重试" : "加载中…"}
+      {done ? t('daily.noDataHint') : t('daily.loading')}
     </p>
   );
 
@@ -80,11 +83,11 @@ export function DailyReview() {
     setWatchCodes(next); saveWatch(next); refreshWatch(next);
   };
 
-  const today = new Date().toLocaleDateString("zh-CN", { year: "numeric", month: "2-digit", day: "2-digit" });
+  const today = new Date().toLocaleDateString(i18n.language === 'zh' ? 'zh-CN' : 'en-US', { year: "numeric", month: "2-digit", day: "2-digit" });
 
   const dataSummary = indices.length
     ? indices.map((i) => `${i.name} ${i.price}（${i.change_pct > 0 ? "+" : ""}${i.change_pct}%）`).join("；")
-    : "（指数数据未取到）";
+    : t('daily.indices.noData');
 
   const runReview = async () => {
     setReviewErr(null);
@@ -101,7 +104,7 @@ export function DailyReview() {
         onDelta: (t) => setReview((r) => r + t),
       });
     } catch (e) {
-      setReviewErr(e instanceof ApiError ? e.message : "复盘失败");
+      setReviewErr(e instanceof ApiError ? e.message : t('common.errors.generic'));
     } finally {
       setReviewLoading(false);
     }
@@ -110,40 +113,40 @@ export function DailyReview() {
   const sentiment = overview?.sentiment;
   const sectors = overview?.sectors || [];
   const sentCells = sentiment ? [
-    { k: "上涨家数", v: sentiment.up, up: true },
-    { k: "下跌家数", v: sentiment.down, up: false },
-    { k: "平盘", v: sentiment.flat, up: null },
-    { k: "涨停", v: sentiment.zt, up: true },
-    { k: "真实涨停", v: sentiment.zt_real, up: true },
-    { k: "跌停", v: sentiment.dt, up: false },
-    { k: "真实跌停", v: sentiment.dt_real, up: false },
-    { k: "活跃度", v: sentiment.active, up: null },
+    { k: t('daily.sentiment.advancers'), v: sentiment.up, up: true },
+    { k: t('daily.sentiment.decliners'), v: sentiment.down, up: false },
+    { k: t('daily.sentiment.flat'), v: sentiment.flat, up: null },
+    { k: t('daily.sentiment.limitUp'), v: sentiment.zt, up: true },
+    { k: t('daily.sentiment.realLimitUp'), v: sentiment.zt_real, up: true },
+    { k: t('daily.sentiment.limitDown'), v: sentiment.dt, up: false },
+    { k: t('daily.sentiment.realLimitDown'), v: sentiment.dt_real, up: false },
+    { k: t('daily.sentiment.activity'), v: sentiment.active, up: null },
   ] : [];
 
   return (
     <div>
       <PageHeader
-        title="每日复盘"
-        subtitle={`${today} · 大盘 / 情绪 / 板块资金一屏看全，交给你的 AI 做复盘`}
+        title={t('daily.title')}
+        subtitle={t('daily.subtitle', { date: today })}
         actions={
           <AskAiButton
             context={`今日大盘数据：${dataSummary}`}
-            label="问 AI"
-            suggestions={["今天大盘怎么走", "哪些指数领涨领跌", "盘面有什么值得注意"]}
+            label={t('daily.askAiLabel')}
+            suggestions={[t('daily.suggestions.howDidMarket'), t('daily.suggestions.leadingIndices'), t('daily.suggestions.noteworthy')]}
           />
         }
       />
 
       {/* 1. 大盘指数（实时） */}
       <div className="mb-3 flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-muted-foreground">大盘指数</h3>
-        <button onClick={loadIndices} className="text-muted-foreground hover:text-primary" title="刷新"><RefreshCw className="h-3.5 w-3.5" /></button>
+        <h3 className="text-sm font-semibold text-muted-foreground">{t('daily.indices.title')}</h3>
+        <button onClick={loadIndices} className="text-muted-foreground hover:text-primary" title={t('common.buttons.refresh')}><RefreshCw className="h-3.5 w-3.5" /></button>
       </div>
       <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
         {indices.length === 0
           ? [1, 2, 3, 4].map((i) => (
               <GlassCard key={i} className="p-3">
-                <p className="text-xs text-muted-foreground">{idxErr ? "行情未接通" : "加载中…"}</p>
+                <p className="text-xs text-muted-foreground">{idxErr ? t('daily.indices.disconnected') : t('daily.indices.loading')}</p>
                 <p className="mt-1 font-mono text-lg font-bold text-muted-foreground/40">—</p>
               </GlassCard>
             ))
@@ -160,8 +163,8 @@ export function DailyReview() {
       {globalIdx.length > 0 && (
         <>
           <div className="mb-3 flex items-center gap-2">
-            <h3 className="flex items-center gap-1.5 text-sm font-semibold text-muted-foreground"><Globe className="h-4 w-4" /> 全球市场</h3>
-            <span className="text-[11px] text-muted-foreground/50">隔夜外围 · A 股常看美股 / 港股脸色</span>
+            <h3 className="flex items-center gap-1.5 text-sm font-semibold text-muted-foreground"><Globe className="h-4 w-4" /> {t('daily.globalMarket.title')}</h3>
+            <span className="text-[11px] text-muted-foreground/50">{t('daily.globalMarket.subtitle')}</span>
           </div>
           <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-5">
             {globalIdx.map((g) => (
@@ -179,9 +182,9 @@ export function DailyReview() {
 
       {/* 2. 关注股票（自选） */}
       <div className="mb-3 flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-muted-foreground">关注股票</h3>
+        <h3 className="text-sm font-semibold text-muted-foreground">{t('daily.watchStocks.title')}</h3>
         {watchCodes.length > 0 && (
-          <button onClick={() => refreshWatch(watchCodes)} className="text-muted-foreground hover:text-primary" title="刷新价格">
+          <button onClick={() => refreshWatch(watchCodes)} className="text-muted-foreground hover:text-primary" title={t('daily.watchStocks.refreshPrices')}>
             {watchLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <RefreshCw className="h-3.5 w-3.5" />}
           </button>
         )}
@@ -192,23 +195,23 @@ export function DailyReview() {
             value={watchInput}
             onChange={(e) => setWatchInput(e.target.value.replace(/[^\d,\s]/g, "").slice(0, 80))}
             onKeyDown={(e) => e.key === "Enter" && addWatch()}
-            placeholder="加自选：可批量，如 600519 000858"
+            placeholder={t('daily.watchStocks.addPlaceholder')}
             className="w-60 rounded-lg border border-border bg-black/20 px-3 py-2 text-sm outline-none focus:border-primary/50"
           />
           <button onClick={addWatch}
             className="inline-flex items-center gap-1.5 rounded-lg bg-primary/15 px-4 py-2 text-sm font-medium text-primary shadow-glow hover:bg-primary/25">
-            <Plus className="h-4 w-4" /> 增加
+            <Plus className="h-4 w-4" /> {t('daily.watchStocks.add')}
           </button>
         </div>
         {watchCodes.length === 0 ? (
-          <p className="text-sm text-muted-foreground/60">加上你关注的股票，随时看它们的实时价格与涨跌。数据存本地，不上传。</p>
+          <p className="text-sm text-muted-foreground/60">{t('daily.watchStocks.emptyHint')}</p>
         ) : (
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
             {watchCodes.map((c) => {
               const q = watchQuotes[c];
               return (
                 <div key={c} className="group relative rounded-lg bg-muted/25 p-3">
-                  <button onClick={() => removeWatch(c)} title="移除"
+                  <button onClick={() => removeWatch(c)} title={t('daily.watchStocks.remove')}
                     className="absolute right-1.5 top-1.5 text-muted-foreground/40 opacity-0 transition-opacity hover:text-destructive group-hover:opacity-100">
                     <X className="h-3.5 w-3.5" />
                   </button>
@@ -227,17 +230,17 @@ export function DailyReview() {
       {/* 3. AI 当日复盘 */}
       <GlassCard glow className="mb-6">
         <div className="flex items-center justify-between">
-          <h3 className="flex items-center gap-1.5 font-semibold"><Sparkles className="h-4 w-4 text-primary" /> AI 当日复盘</h3>
+          <h3 className="flex items-center gap-1.5 font-semibold"><Sparkles className="h-4 w-4 text-primary" /> {t('daily.aiReview.title')}</h3>
           <button onClick={runReview} disabled={reviewLoading}
             className="inline-flex items-center gap-1.5 rounded-lg bg-primary/15 px-4 py-2 text-sm font-medium text-primary shadow-glow hover:bg-primary/25 disabled:opacity-50">
             {reviewLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
-            {review ? "重新复盘" : "让 AI 复盘今天"}
+            {review ? t('daily.aiReview.rerun') : t('daily.aiReview.run')}
           </button>
         </div>
         {needConfig && (
           <div className="mt-3 flex items-center gap-2 rounded-lg border border-warning/30 bg-warning/5 p-3 text-sm text-muted-foreground">
             <AlertCircle className="h-4 w-4 shrink-0 text-warning" />
-            还没接入 AI。<Link to="/settings" className="text-primary">先去接入你的 AI</Link>，之后一键出复盘。
+            {t('daily.aiReview.needConfig')}
           </div>
         )}
         {reviewErr && (
@@ -248,16 +251,16 @@ export function DailyReview() {
         {review ? (
           <>
             <div className="prose prose-sm prose-invert mt-4 max-w-none text-foreground"><ReactMarkdown remarkPlugins={[remarkGfm]}>{review}</ReactMarkdown></div>
-            {!reviewLoading && <div className="mt-3"><SaveNoteButton kind="复盘" title={`每日复盘 ${today}`} content={review} /></div>}
+            {!reviewLoading && <div className="mt-3"><SaveNoteButton kind={t('daily.aiReview.title')} title={`${t('daily.title')} ${today}`} content={review} /></div>}
           </>
         ) : !needConfig && !reviewErr && !reviewLoading ? (
-          <p className="mt-3 text-sm text-muted-foreground">点上方按钮，系统把当天客观数据打包给你的 AI，由它生成复盘。<b className="text-foreground">分析是它给的，我们只负责喂数据。</b></p>
+          <p className="mt-3 text-sm text-muted-foreground">{t('daily.aiReview.emptyHint')}</p>
         ) : null}
       </GlassCard>
 
       {/* 4. 市场情绪 */}
       <div className="mb-3 flex items-center gap-2">
-        <h3 className="flex items-center gap-1.5 text-sm font-semibold text-muted-foreground"><Gauge className="h-4 w-4" /> 市场情绪</h3>
+        <h3 className="flex items-center gap-1.5 text-sm font-semibold text-muted-foreground"><Gauge className="h-4 w-4" /> {t('daily.sentiment.title')}</h3>
         {sentiment?.date && <span className="text-[11px] text-muted-foreground/50">{sentiment.date}</span>}
       </div>
       <GlassCard className="mb-6">
@@ -267,8 +270,8 @@ export function DailyReview() {
           <>
             <div className="grid gap-3 sm:grid-cols-2">
               {[
-                { k: "大盘宽度", v: sentiment.breadth, hint: "冰点 / 偏弱 / 中性 / 偏强 / 普涨" },
-                { k: "题材投机", v: sentiment.speculation, hint: "冰点 / 普通 / 活跃 / 亢奋" },
+                { k: t('daily.sentiment.breadth'), v: sentiment.breadth, hint: t('daily.sentiment.breadthHint') },
+                { k: t('daily.sentiment.speculation'), v: sentiment.speculation, hint: t('daily.sentiment.speculationHint') },
               ].map((m) => (
                 <div key={m.k} className="rounded-lg bg-muted/25 p-4">
                   <p className="text-xs text-muted-foreground">{m.k}</p>
@@ -291,8 +294,8 @@ export function DailyReview() {
 
       {/* 4b. 短线情绪（连板梯队 / 打板情绪，聚合口径零个股名） */}
       <div className="mb-3 flex items-center gap-2">
-        <h3 className="flex items-center gap-1.5 text-sm font-semibold text-muted-foreground"><Flame className="h-4 w-4" /> 短线情绪</h3>
-        <span className="text-[11px] text-muted-foreground/50">连板股 · 打板情绪 · 客观公开榜单</span>
+        <h3 className="flex items-center gap-1.5 text-sm font-semibold text-muted-foreground"><Flame className="h-4 w-4" /> {t('daily.shortTerm.title')}</h3>
+        <span className="text-[11px] text-muted-foreground/50">{t('daily.shortTerm.subtitle')}</span>
         {emotion?.date && <span className="ml-auto text-[11px] text-muted-foreground/50">{emotion.date}</span>}
       </div>
       <GlassCard className="mb-6">
@@ -303,10 +306,10 @@ export function DailyReview() {
             {/* 关键计数 */}
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
               {[
-                { k: "涨停", v: `${emotion.zt_count}`, cls: "text-danger" },
-                { k: "跌停", v: `${emotion.dt_count}`, cls: "text-success" },
-                { k: "最高连板", v: `${emotion.max_boards} 板`, cls: "text-primary" },
-                { k: "连板（2板+）", v: `${emotion.lianban_count} 家`, cls: "text-primary" },
+                { k: t('daily.shortTerm.limitUp'), v: `${emotion.zt_count}`, cls: "text-danger" },
+                { k: t('daily.shortTerm.limitDown'), v: `${emotion.dt_count}`, cls: "text-success" },
+                { k: t('daily.shortTerm.maxBoards'), v: t('daily.shortTerm.maxBoardsValue', { count: emotion.max_boards }), cls: "text-primary" },
+                { k: t('daily.shortTerm.consecutiveCount'), v: t('daily.shortTerm.consecutiveCountValue', { count: emotion.lianban_count }), cls: "text-primary" },
               ].map((c) => (
                 <div key={c.k} className="rounded-lg bg-muted/25 p-3 text-center">
                   <p className="text-[11px] text-muted-foreground">{c.k}</p>
@@ -317,9 +320,9 @@ export function DailyReview() {
             {/* 打板情绪比率 */}
             <div className="mt-2 grid grid-cols-3 gap-2">
               {[
-                { k: "封板率", v: emotion.seal_rate, hint: "封住 / 尝试涨停", strong: true },
-                { k: "炸板率", v: emotion.break_rate, hint: "炸板 / 尝试涨停", strong: false },
-                { k: "晋级率", v: emotion.promotion_rate, hint: "昨涨停今又停", strong: true },
+                { k: t('daily.shortTerm.sealRate'), v: emotion.seal_rate, hint: t('daily.shortTerm.sealRateHint'), strong: true },
+                { k: t('daily.shortTerm.breakRate'), v: emotion.break_rate, hint: t('daily.shortTerm.breakRateHint'), strong: false },
+                { k: t('daily.shortTerm.promotionRate'), v: emotion.promotion_rate, hint: t('daily.shortTerm.promotionRateHint'), strong: true },
               ].map((c) => (
                 <div key={c.k} className="rounded-lg bg-muted/20 p-2.5 text-center">
                   <p className="text-[11px] text-muted-foreground">{c.k}</p>
@@ -332,15 +335,15 @@ export function DailyReview() {
             </div>
             {/* 连板股清单（2 板以上，客观公开榜单） */}
             <div className="mt-3">
-              <p className="mb-1.5 text-[11px] text-muted-foreground">连板股（2 板以上连续涨停）· 客观公开榜单，非推荐 / 非预测</p>
+              <p className="mb-1.5 text-[11px] text-muted-foreground">{t('daily.shortTerm.lianbanTitle')}</p>
               {emotion.lianban_stocks.length === 0 ? (
-                <p className="text-xs text-muted-foreground/50">今日无 2 板以上个股</p>
+                <p className="text-xs text-muted-foreground/50">{t('daily.shortTerm.noLianban')}</p>
               ) : (
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead>
                       <tr className="border-b border-border/50 text-left text-xs text-muted-foreground">
-                        {["名称", "连板", "现价", "涨停%", "成交额", "流通市值", "概念"].map((h) => (
+                        {[t('daily.shortTerm.name'), t('daily.shortTerm.consecutive'), t('daily.shortTerm.price'), t('daily.shortTerm.limitUpPct'), t('daily.shortTerm.volume'), t('daily.shortTerm.floatCap'), t('daily.shortTerm.concept')].map((h) => (
                           <th key={h} className="whitespace-nowrap px-2 py-2 font-medium">{h}</th>
                         ))}
                       </tr>
@@ -349,7 +352,7 @@ export function DailyReview() {
                       {emotion.lianban_stocks.map((s) => (
                         <tr key={s.code} className="border-b border-border/30">
                           <td className="px-2 py-2"><span className="font-medium">{s.name}</span> <span className="text-xs text-muted-foreground/50">{s.code}</span></td>
-                          <td className="whitespace-nowrap px-2 py-2 font-mono font-bold text-primary">{s.boards} 板</td>
+                          <td className="whitespace-nowrap px-2 py-2 font-mono font-bold text-primary">{t('daily.shortTerm.maxBoardsValue', { count: s.boards })}</td>
                           <td className="px-2 py-2 font-mono">{s.price}</td>
                           <td className="px-2 py-2 font-mono text-danger">+{s.pct}%</td>
                           <td className="whitespace-nowrap px-2 py-2 font-mono text-muted-foreground">{yi(s.amount)}</td>
@@ -368,8 +371,8 @@ export function DailyReview() {
 
       {/* 4c. 全市场成交额 TOP20（客观公开榜单） */}
       <div className="mb-3 flex items-center gap-2">
-        <h3 className="flex items-center gap-1.5 text-sm font-semibold text-muted-foreground"><BarChart3 className="h-4 w-4" /> 全市场成交额 TOP20</h3>
-        <span className="text-[11px] text-muted-foreground/50">客观公开榜单，非推荐 / 非预测 / 不构成投资建议</span>
+        <h3 className="flex items-center gap-1.5 text-sm font-semibold text-muted-foreground"><BarChart3 className="h-4 w-4" /> {t('daily.turnover.title')}</h3>
+        <span className="text-[11px] text-muted-foreground/50">{t('daily.turnover.subtitle')}</span>
         {turnover?.updated && <span className="ml-auto text-[11px] text-muted-foreground/50">{turnover.updated}</span>}
       </div>
       <GlassCard className="mb-6">
@@ -380,7 +383,7 @@ export function DailyReview() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-border/50 text-left text-xs text-muted-foreground">
-                  {["#", "名称", "现价", "涨跌%", "成交额", "总市值", "行业"].map((h) => (
+                  {[t('daily.turnover.rank'), t('daily.turnover.name'), t('daily.turnover.price'), t('daily.turnover.changePct'), t('daily.turnover.volume'), t('daily.turnover.marketCap'), t('daily.turnover.industry')].map((h) => (
                     <th key={h} className="whitespace-nowrap px-2 py-2 font-medium">{h}</th>
                   ))}
                 </tr>
@@ -407,8 +410,8 @@ export function DailyReview() {
 
       {/* 5. 板块资金趋势榜（行业） */}
       <div className="mb-3 flex items-center gap-2">
-        <h3 className="flex items-center gap-1.5 text-sm font-semibold text-muted-foreground"><TrendingUp className="h-4 w-4" /> 板块资金趋势榜</h3>
-        <span className="text-[11px] text-muted-foreground/50">行业 · 按今日净流入排序</span>
+        <h3 className="flex items-center gap-1.5 text-sm font-semibold text-muted-foreground"><TrendingUp className="h-4 w-4" /> {t('daily.sectorFlow.title')}</h3>
+        <span className="text-[11px] text-muted-foreground/50">{t('daily.sectorFlow.subtitle')}</span>
       </div>
       <GlassCard className="mb-6">
         {sectors.length === 0 ? (
@@ -418,7 +421,7 @@ export function DailyReview() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-border/50 text-left text-xs text-muted-foreground">
-                  {["行业", "涨跌%", "今日净流入", "流入", "流出", "家数"].map((h) => (
+                  {[t('daily.sectorFlow.industry'), t('daily.sectorFlow.changePct'), t('daily.sectorFlow.netInflow'), t('daily.sectorFlow.inflow'), t('daily.sectorFlow.outflow'), t('daily.sectorFlow.firms')].map((h) => (
                     <th key={h} className="whitespace-nowrap px-2 py-2 font-medium">{h}</th>
                   ))}
                 </tr>
@@ -428,7 +431,7 @@ export function DailyReview() {
                   <tr key={s.name} className="border-b border-border/30">
                     <td className="px-2 py-2 font-medium">{s.name}</td>
                     <td className={cn("px-2 py-2 font-mono", pctColor(s.pct))}>{s.pct > 0 ? "+" : ""}{s.pct}%</td>
-                    <td className={cn("px-2 py-2 font-mono", pctColor(s.net))}>{s.net > 0 ? "+" : ""}{fmt(s.net)} 亿</td>
+                    <td className={cn("px-2 py-2 font-mono", pctColor(s.net))}>{s.net > 0 ? "+" : ""}{fmt(s.net)} {t('common.formats.billionChinese')}</td>
                     <td className="px-2 py-2 font-mono text-muted-foreground">{fmt(s.inflow)}</td>
                     <td className="px-2 py-2 font-mono text-muted-foreground">{fmt(s.outflow)}</td>
                     <td className="px-2 py-2 font-mono text-muted-foreground">{s.firms}</td>
@@ -442,16 +445,16 @@ export function DailyReview() {
 
       {/* 6. 资金轮动 */}
       <div className="mb-3 flex items-center gap-2">
-        <h3 className="flex items-center gap-1.5 text-sm font-semibold text-muted-foreground"><ArrowDownUp className="h-4 w-4" /> 资金轮动</h3>
-        <span className="text-[11px] text-muted-foreground/50">板块级净流入 / 流出</span>
+        <h3 className="flex items-center gap-1.5 text-sm font-semibold text-muted-foreground"><ArrowDownUp className="h-4 w-4" /> {t('daily.fundRotation.title')}</h3>
+        <span className="text-[11px] text-muted-foreground/50">{t('daily.fundRotation.subtitle')}</span>
       </div>
       <div className="mb-2 grid gap-4 md:grid-cols-2">
         {[
-          { title: "流入 Top", icon: TrendingUp, color: "text-danger", rows: sectors.slice(0, 6) },
-          { title: "流出 Top", icon: TrendingDown, color: "text-success", rows: [...sectors].slice(-6).reverse() },
+          { titleKey: "daily.fundRotation.inflowTop", icon: TrendingUp, color: "text-danger", rows: sectors.slice(0, 6) },
+          { titleKey: "daily.fundRotation.outflowTop", icon: TrendingDown, color: "text-success", rows: [...sectors].slice(-6).reverse() },
         ].map((col) => (
-          <GlassCard key={col.title}>
-            <h4 className={cn("mb-3 flex items-center gap-1.5 text-sm font-semibold", col.color)}><col.icon className="h-4 w-4" /> {col.title}</h4>
+          <GlassCard key={col.titleKey}>
+            <h4 className={cn("mb-3 flex items-center gap-1.5 text-sm font-semibold", col.color)}><col.icon className="h-4 w-4" /> {t(col.titleKey)}</h4>
             {col.rows.length === 0 ? (
               pending(ovDone)
             ) : (
@@ -461,7 +464,7 @@ export function DailyReview() {
                     <span className="w-5 text-xs text-muted-foreground/50">{i + 1}</span>
                     <span className="flex-1 truncate">{s.name}</span>
                     <span className={cn("font-mono text-xs", pctColor(s.pct))}>{s.pct > 0 ? "+" : ""}{s.pct}%</span>
-                    <span className={cn("w-20 text-right font-mono text-xs", pctColor(s.net))}>{s.net > 0 ? "+" : ""}{fmt(s.net)} 亿</span>
+                    <span className={cn("w-20 text-right font-mono text-xs", pctColor(s.net))}>{s.net > 0 ? "+" : ""}{fmt(s.net)} {t('common.formats.billionChinese')}</span>
                   </div>
                 ))}
               </div>

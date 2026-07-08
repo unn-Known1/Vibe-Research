@@ -1,0 +1,607 @@
+{
+  "sidebar": {
+    "brand": "Personal AI Research System · A-Share / US / HK Stocks",
+    "nav": {
+      "dailyReview": "Daily Review",
+      "intel": "News Radar",
+      "sectors": "Sector Center",
+      "stockData": "Stock Data",
+      "watchlist": "Watchlist",
+      "portfolio": "My Portfolio",
+      "myReports": "My Reports",
+      "notes": "Research Notes",
+      "settings": "Connect AI"
+    },
+    "sectors": {
+      "humanoidRobot": "Humanoid Robot",
+      "aiComputing": "AI Computing",
+      "hbm": "HBM",
+      "opticalInterconnect": "Optical Interconnect",
+      "commercialSpace": "Commercial Space",
+      "aiPharma": "AI Pharma"
+    },
+    "footer": {
+      "contactAuthor": "Contact Author",
+      "collapse": "Collapse",
+      "expand": "Expand",
+      "light": "Light",
+      "dark": "Dark",
+      "disclaimer": "No stock picks · No predictions · No bias"
+    }
+  },
+  "daily": {
+    "title": "Daily Review",
+    "subtitle": "{{date}} · Market / Sentiment / Sector Flow — all on one screen, let your AI do the review",
+    "askAiLabel": "Ask AI",
+    "suggestions": {
+      "howDidMarket": "How did the market move today?",
+      "leadingIndices": "Which indices led gains and losses?",
+      "noteworthy": "What's noteworthy in the market?"
+    },
+    "indices": {
+      "title": "Market Indices",
+      "noData": "No quote data available",
+      "loading": "Loading…",
+      "disconnected": "Quote feed disconnected"
+    },
+    "globalMarket": {
+      "title": "Global Markets",
+      "subtitle": "Overnight · A-share often follows US / HK market sentiment"
+    },
+    "watchStocks": {
+      "title": "Watched Stocks",
+      "refreshPrices": "Refresh prices",
+      "addPlaceholder": "Add to watchlist: supports batch, e.g. 600519 000858",
+      "add": "Add",
+      "emptyHint": "Add stocks you follow to see their real-time prices and changes. Data stored locally, not uploaded.",
+      "remove": "Remove"
+    },
+    "aiReview": {
+      "title": "AI Daily Review",
+      "rerun": "Re-review",
+      "run": "Let AI review today",
+      "needConfig": "AI not connected yet. <Link to settings>Connect your AI first</Link>, then review with one click.",
+      "emptyHint": "Click the button above — the system packs today's objective data and sends it to your AI for review. <b>The analysis is from the AI; we only feed data.</b>"
+    },
+    "sentiment": {
+      "title": "Market Sentiment",
+      "breadth": "Market Breadth",
+      "breadthHint": "Freezing / Weak / Neutral / Strong / Broad rally",
+      "speculation": "Speculation",
+      "speculationHint": "Freezing / Normal / Active / Euphoric",
+      "advancers": "Advancers",
+      "decliners": "Decliners",
+      "flat": "Flat",
+      "limitUp": "Limit Up",
+      "realLimitUp": "Real Limit Up",
+      "limitDown": "Limit Down",
+      "realLimitDown": "Real Limit Down",
+      "activity": "Activity"
+    },
+    "shortTerm": {
+      "title": "Short-term Sentiment",
+      "subtitle": "Consecutive limit-up · Board sentiment · Objective public ranking",
+      "limitUp": "Limit Up",
+      "limitDown": "Limit Down",
+      "maxBoards": "Max Consecutive",
+      "maxBoardsValue": "{{count}} boards",
+      "consecutiveCount": "Consecutive (2+)",
+      "consecutiveCountValue": "{{count}} families",
+      "sealRate": "Seal Rate",
+      "sealRateHint": "Sealed / Attempts",
+      "breakRate": "Break Rate",
+      "breakRateHint": "Broken / Attempts",
+      "promotionRate": "Promotion Rate",
+      "promotionRateHint": "Yesterday limit-up today limit-up again",
+      "lianbanTitle": "Consecutive Limit-up Stocks (2+ days) · Objective public ranking, not recommendations / not predictions",
+      "noLianban": "No stocks with 2+ consecutive limit-ups today",
+      "name": "Name",
+      "consecutive": "Consecutive",
+      "price": "Price",
+      "limitUpPct": "Limit Up %",
+      "volume": "Volume",
+      "floatCap": "Float Cap",
+      "concept": "Concept"
+    },
+    "turnover": {
+      "title": "Market Turnover TOP 20",
+      "subtitle": "Objective public ranking, not recommendations / not predictions / not investment advice",
+      "rank": "#",
+      "name": "Name",
+      "price": "Price",
+      "changePct": "Change %",
+      "volume": "Volume",
+      "marketCap": "Market Cap",
+      "industry": "Industry"
+    },
+    "sectorFlow": {
+      "title": "Sector Fund Flow Ranking",
+      "subtitle": "Industry · Sorted by net inflow today",
+      "industry": "Industry",
+      "changePct": "Change %",
+      "netInflow": "Net Inflow",
+      "inflow": "Inflow",
+      "outflow": "Outflow",
+      "firms": "Firms"
+    },
+    "fundRotation": {
+      "title": "Fund Rotation",
+      "subtitle": "Sector-level net inflow / outflow",
+      "inflowTop": "Inflow Top",
+      "outflowTop": "Outflow Top"
+    },
+    "noDataHint": "No data available. Possibly outside trading hours or data source temporarily unavailable. Click refresh next to Market Indices to retry.",
+    "loading": "Loading…"
+  },
+  "intel": {
+    "title": "News Radar",
+    "subtitle": "Multi-source news hub: AI helps you cross-reference and extract key points",
+    "tabs": {
+      "events": "Event Probability",
+      "filings": "A-Share Filings",
+      "news": "Public News",
+      "investmentNews": "Investment News",
+      "integrated": "Integrated",
+      "eventsDesc": "Global macro expectation probabilities (public data, read-only), coming soon",
+      "filingsDesc": "Aggregated recent filings for watchlist stocks (East Money public disclosures)",
+      "newsDesc": "Aggregated recent news for watchlist stocks (public sources)",
+      "investmentNewsDesc": "12-track global public RSS news (integrated from investment-news repo)"
+    },
+    "stats": "{{sources}} public sources · Last {{days}} days · Updated {{time}}",
+    "statsFallback": "12 tracks · 108 public sources",
+    "extractAll": "Extract All Key Points",
+    "extracting": "Extracting {{done}}/{{total}}",
+    "refresh": "Refresh",
+    "fetching": "Fetching…",
+    "noNewsYet": "No news fetched yet. Click <b>Refresh</b> above to pull (about 20-40 seconds).",
+    "todayHighlights": "Today's Highlights",
+    "rerun": "Re-extract",
+    "aiReading": "AI is reading this track's news…",
+    "needKey": "AI not connected yet. <Link to settings>Connect your AI first</Link> to extract today's highlights for this track.",
+    "letAiExtract": "Let AI Extract Today's Highlights",
+    "noRecentUpdates": "No updates in this track for the last {{days}} days",
+    "watchlistEmpty": "No watched stocks yet. Go to <Link>Daily Review</Link> to add stocks (6-digit codes). Filings / news for them will appear here.",
+    "watchlistFeed": "Watching {{count}} stocks · {{total}} {{type}} (recent)",
+    "fetchingFeed": "Aggregating {{type}} for watched stocks…",
+    "noRecentFilings": "No recent {{type}} for watched stocks.",
+    "needPlugin": "Plugin not installed. Install it to enable news.",
+    "disclaimer": "Only aggregates public information, no recommendations, no predictions. Filings / news come from public disclosures and public sources of stocks in your watchlist; track news is filtered by compliance vocabulary. Today's highlights are extracted by your own configured AI.",
+    "errors": {
+      "loadFailed": "Failed to load",
+      "refreshFailed": "Failed to refresh",
+      "generateFailed": "Failed to generate"
+    },
+    "dataSourceComingSoon": "This data source is under development — you can use 'Investment News' to see 12-track public news, or use 'A-Share Filings / Public News' to see watchlist stock updates."
+  },
+  "stock": {
+    "title": "Stock Data",
+    "subtitle": "Quotes · Valuation · Reports · News — all objective data, let your AI make the judgment",
+    "aiLabel": "Let AI read this data",
+    "suggestions": {
+      "global": ["How's this company's fundamentals?", "How's profitability?", "What are the risks?"],
+      "local": ["Is this valuation expensive?", "What do consensus estimates say?", "What are the key disagreements in recent reports?", "What are the risks?"]
+    },
+    "searchPlaceholder": "A-share 6-digit code, or US/HK/Korean stock (AAPL / 00700 / 005930.KS)",
+    "query": "Search",
+    "inputRequired": "Please enter a code",
+    "queryFailed": "Query failed",
+    "globalStock": {
+      "price": "Price",
+      "changePct": "Change %",
+      "marketCap": "Market Cap",
+      "volume": "Volume",
+      "open": "Open",
+      "high": "High",
+      "low": "Low",
+      "prevClose": "Prev Close",
+      "financials": "Key Financials",
+      "dataNote": "Data from global-stock-data (East Money) · Amounts in native currency · Objective data only, no buy/sell advice",
+      "revenue": "Revenue",
+      "netProfit": "Net Profit",
+      "eps": "EPS",
+      "grossMargin": "Gross Margin",
+      "netMargin": "Net Margin",
+      "debtRatio": "Debt Ratio",
+      "yoy": "YoY"
+    },
+    "valuation": {
+      "price": "Price",
+      "peTtm": "PE(TTM)",
+      "pb": "PB",
+      "marketCap": "Market Cap",
+      "eps26e": "26E EPS",
+      "forwardPe": "Forward PE",
+      "peg": "PEG",
+      "digestYears": "Digest Years",
+      "coveredBy": "{{count}} analysts covering"
+    },
+    "earningsSnapshot": {
+      "title": "Earnings Snapshot",
+      "subtitle": "Latest earnings + forward consensus + valuation position at a glance. Objective mechanical classification, not buy/sell advice.",
+      "revenue": "Total Revenue",
+      "netProfit": "Net Profit",
+      "yoyLabel": "YoY",
+      "highGrowth": "High Growth",
+      "positiveGrowth": "Positive Growth",
+      "decline": "Decline",
+      "profitFaster": "Profit growing faster than revenue",
+      "profitSlower": "Profit growing slower than revenue",
+      "highRoe": "High",
+      "midRoe": "Mid",
+      "lowRoe": "Low",
+      "forwardExpect": "Forward consensus:"
+    },
+    "valuationPercentile": {
+      "title": "Valuation Historical Percentile",
+      "subtitle": "Green = Undervalued / Gray = Fair / Red = Overvalued. Shows current historical position only, not buy/sell advice.",
+      "current": "Current",
+      "fiveYear": "5Y",
+      "percentile": "percentile",
+      "undervalued": "Undervalued",
+      "fair": "Fair",
+      "overvalued": "Overvalued",
+      "low": "Low",
+      "high": "High",
+      "mid": "Mid",
+      "points": "{{count}} data points"
+    },
+    "financials": {
+      "title": "Key Financials",
+      "subtitle": "Tonghuashun financial summary, latest reporting period.",
+      "revenue": "Total Revenue",
+      "netProfit": "Net Profit",
+      "eps": "EPS",
+      "roe": "ROE",
+      "grossMargin": "Gross Margin",
+      "netMargin": "Net Margin",
+      "bvps": "BVPS",
+      "opCfPs": "Operating CF/Share",
+      "yoy": "YoY"
+    },
+    "reports": {
+      "title": "Recent Reports ({{count}})"
+    },
+    "announcements": {
+      "title": "Recent Announcements ({{count}})"
+    },
+    "news": {
+      "title": "Stock News",
+      "noNews": "No news available",
+      "needPlugin": "Plugin not installed. Install it to enable news/announcements."
+    },
+    "fundChips": {
+      "title": "Fund Flow · Chips",
+      "marginBalance": "Margin Balance",
+      "shortBalance": "Short Balance",
+      "shareholders": "Shareholders",
+      "holderCount": "Shareholder Count",
+      "momChange": "MoM {{value}}",
+      "mainNetInflow20d": "Main Net Inflow (20D)",
+      "lastDividend": "Last Dividend (/10 shares)",
+      "blockTrades": "Recent Block Trades ({{count}})",
+      "premium": "Premium",
+      "buyer": "Buy",
+      "seller": "Sell",
+      "note": "Fund/chip data is public objective data for understanding the stock's current state only, not investment advice."
+    },
+    "dragonTiger": {
+      "title": "Dragon & Tiger List ({{count}} times in 30 days)",
+      "reason": "Reason",
+      "netBuy": "Net Buy {{value}}",
+      "buySeats": "Buy Seats TOP",
+      "sellSeats": "Sell Seats TOP"
+    },
+    "lockup": {
+      "title": "Lockup Expiry",
+      "upcomingTitle": "Upcoming expirations in 90 days ({{count}})",
+      "ratio": "Ratio {{value}}",
+      "noUpcoming": "No upcoming expirations in 90 days.",
+      "historyTitle": "Past expirations (last {{count}})",
+      "type": "Type"
+    },
+    "sectorsConcepts": {
+      "title": "Sector Attribution · Concepts",
+      "hotConcepts": "Current hot concept hits"
+    },
+    "investorQa": {
+      "title": "Investor Q&A",
+      "qLabel": "Q",
+      "aLabel": "A"
+    },
+    "emptyHint": "Enter a 6-digit stock code to pull its quotes, valuation, reports, and news.<br><span>Data from public sources (Tencent Quotes / East Money Reports / akshare); Vibe-Research does not pre-load any stocks or make recommendations.</span>"
+  },
+  "portfolio": {
+    "title": "My Portfolio",
+    "subtitle": "Self-entered, stored locally, real-time floating P&L",
+    "askAiLabel": "Let AI review my portfolio",
+    "suggestions": {
+      "concentration": "Which sectors is my portfolio concentrated in?",
+      "risks": "What structural risks are there?",
+      "organize": "Help me organize this"
+    },
+    "securityNote": "Portfolio is <b>stored locally only</b>, not uploaded, not in any repo. Prices auto-refresh every 30 minutes. This product provides no stocks, no advice — it only helps you track your own positions.",
+    "summary": {
+      "totalValue": "Total Value",
+      "totalCost": "Total Cost",
+      "floatingPnl": "Floating P&L",
+      "pnlPct": "P&L %"
+    },
+    "addHolding": {
+      "title": "Add Position",
+      "stockCode": "Stock Code",
+      "codePlaceholder": "6-digit code",
+      "shares": "Shares",
+      "sharesPlaceholder": "e.g. 100",
+      "costPrice": "Cost Price",
+      "costPlaceholder": "e.g. 12.5, can be negative",
+      "add": "Add",
+      "sameCodeHint": "Adding the same code again merges via weighted average cost (averaging up)."
+    },
+    "errors": {
+      "invalidCode": "Please enter a 6-digit stock code",
+      "invalidShares": "Shares must be > 0, cost must be a number (can be negative)",
+      "addFailed": "Add failed",
+      "loadFailed": "Failed to load"
+    },
+    "detail": {
+      "title": "Holdings Detail",
+      "updatedAt": "Updated {{time}}",
+      "emptyHint": "No holdings yet. Use the form above to add one.",
+      "name": "Name",
+      "price": "Price",
+      "shares": "Shares",
+      "cost": "Cost",
+      "value": "Value",
+      "pnl": "Floating P&L",
+      "pnlPct": "P&L %",
+      "delete": "Delete"
+    },
+    "addClose": {
+      "title": "Add Closed Position Record",
+      "stockCode": "Stock Code",
+      "codePlaceholder": "6-digit code",
+      "closeDate": "Close Date",
+      "closePrice": "Close Price",
+      "pricePlaceholder": "Sell price",
+      "shares": "Shares",
+      "sharesPlaceholder": "e.g. 100",
+      "buyCost": "Buy Cost",
+      "costPlaceholder": "Cost price, can be negative",
+      "record": "Record",
+      "errors": {
+        "invalidCode": "Closed position: Please enter a 6-digit code",
+        "selectDate": "Please select a close date",
+        "invalidValues": "Close price / shares must be > 0, cost must be a number (can be negative)",
+        "addFailed": "Failed to add closed position record"
+      }
+    },
+    "closed": {
+      "title": "Closed Positions",
+      "realizedPnlTotal": "Realized P&L Total",
+      "emptyHint": "No closed position records yet. After selling, add a record above as realized P&L history.",
+      "name": "Name",
+      "closeDate": "Close Date",
+      "closePrice": "Close Price",
+      "shares": "Shares",
+      "cost": "Cost",
+      "realizedPnl": "Realized P&L",
+      "pnlPct": "P&L %",
+      "delete": "Delete"
+    }
+  },
+  "watchlist": {
+    "title": "Watchlist",
+    "subtitle": "Batch add and overview all your tracked stocks. Data stored locally only.",
+    "askAiLabel": "Let AI read watchlist",
+    "suggestions": {
+      "valuation": "Which of these have high valuations?",
+      "group": "Help me group them by sector",
+      "risks": "What's the biggest risk for each?"
+    },
+    "addHint": "Batch add — paste a list of codes (comma / space / newline, auto-detects 6-digit A-share codes)",
+    "addPlaceholder": "e.g.: 600519 000858, 002463\n300750 688017",
+    "add": "Add",
+    "noNewCode": "No new 6-digit codes recognized (may already be in watchlist)",
+    "addedCount": "Added {{count}}",
+    "overview": {
+      "title": "Watchlist Overview",
+      "emptyHint": "No watchlist stocks yet. Paste a list of codes in the box above to batch add.",
+      "name": "Name",
+      "code": "Code",
+      "price": "Price",
+      "changePct": "Change %",
+      "peTtm": "PE(TTM)",
+      "pb": "PB",
+      "turnoverPct": "Turnover %",
+      "remove": "Remove"
+    }
+  },
+  "settings": {
+    "title": "Connect AI",
+    "subtitle": "Configure once, use your own model for all 'Ask AI' and 'Review' features site-wide",
+    "securityNote": "API key is <b>stored in your local browser only</b>. It is sent to your own backend to call the model when you ask a question. Never uploaded, never in any repo. All analysis is provided by your model — this product does not calibrate.",
+    "subscription": {
+      "title": "Subscription Access",
+      "desc": "Calls your locally installed AI CLI (Claude Code / Qwen / DeepSeek / Codex…) using your subscription quota, <b>no API key needed</b>. Backend must be running locally.",
+      "description": "Select a locally installed and logged-in CLI. Vibe-Research backend uses it with your subscription quota — <b>no key needed</b>.",
+      "note": "(Only works when backend runs locally; for reviews / today's highlights / stock AI queries, etc.)",
+      "comingSoon": "Coming soon",
+      "save": "Save",
+      "clear": "Clear"
+    },
+    "api": {
+      "title": "API Access",
+      "desc": "Paste your API key. Supports DeepSeek / Doubao / MiniMax / OpenAI / OpenRouter / any compatible endpoint. <b>Ready to use.</b>",
+      "selectModel": "Select Model",
+      "baseUrl": "Base URL",
+      "model": "Model",
+      "modelPlaceholder": "Model name (Doubao: use ep-… endpoint ID)",
+      "apiKey": "API Key",
+      "apiKeyPlaceholder": "sk-…",
+      "saveLocal": "Save (local only)",
+      "clear": "Clear",
+      "errorFillAll": "Please fill in Base URL, API Key, and Model"
+    },
+    "toasts": {
+      "savedApi": "Saved locally. 'Ask AI / Review' is now available site-wide",
+      "savedSubscription": "Selected '{{name}}' subscription. 'Ask AI / Review' will use your local {{name}}",
+      "selectAvailable": "Please select an available subscription (marked 'Coming soon' are not yet supported)",
+      "cleared": "Local config cleared"
+    },
+    "accessKey": {
+      "title": "Backend Access Key (Optional)",
+      "desc": "Only needed when the backend has <code>VR_API_KEY</code> set (for public deployment anti-abuse). Fill in the same value as the backend. If running locally without auth, leave empty. Also stored locally only.",
+      "placeholder": "Must match backend VR_API_KEY",
+      "save": "Save",
+      "saved": "Backend access key saved (local only)",
+      "cleared": "Backend access key cleared"
+    }
+  },
+  "reports": {
+    "title": "My Reports",
+    "subtitle": "Drag in your research reports to archive. Auto-categorized by industry. Files stored in local deploy directory only — not uploaded, not in any repo.",
+    "uploadHint": "Drag reports here, or click to select files",
+    "uploading": "Uploading…",
+    "supportedFormats": "Supports PDF / Word / txt / md / spreadsheets / images, max 25MB each, multiple selection allowed",
+    "emptyHint": "No archived reports yet. Drag your collected reports into the box above — they'll be auto-categorized by industry.",
+    "count": "{{count}} files",
+    "download": "Download",
+    "delete": "Delete",
+    "deleteConfirm": "Delete '{{name}}'? (Also removed from local archive directory)",
+    "errors": {
+      "loadFailed": "Failed to load report list",
+      "uploadFailed": "Upload failed",
+      "deleteFailed": "Delete failed",
+      "downloadFailed": "Download failed"
+    },
+    "uncategorized": "Uncategorized"
+  },
+  "notes": {
+    "title": "Research Notes",
+    "subtitle": "AI reviews / highlights / Q&A saved locally for anytime review. Data stored locally only.",
+    "clearAll": "Clear All",
+    "clearConfirm": "Clear all research notes?",
+    "emptyHint": "No notes yet. Click <b>'Save to Archive'</b> in Daily Review, News Radar, or Ask AI to save analysis results.",
+    "delete": "Delete"
+  },
+  "sectors": {
+    "title": "Sector Center",
+    "subtitle": "{{count}} hot sector value chain frameworks · Only segments, no stocks",
+    "hot": "Hot",
+    "segmentsCount": "{{count}} segments",
+    "underVerification": "Segments being verified",
+    "totalHint": "{{total}} sectors, {{hotCount}} hot · Segments verified and completed in real-time"
+  },
+  "sectorDetail": {
+    "notFound": "Sector not found.",
+    "backToSectors": "Back to Sector Center",
+    "aiLabel": "Let AI break down this sector",
+    "suggestions": {
+      "framework": "Break down by 7-dimension framework",
+      "valueChain": "Value chain map of this sector",
+      "bottleneck": "Which segment is the bottleneck?",
+      "risks": "Any risk signals?"
+    },
+    "coreSegments": "Core Segments ({{count}})",
+    "addWatchHint": "Want to track stocks for a specific segment? Data stored locally — not uploaded, not in any repo.",
+    "underVerificationDetail": "This sector's segment framework is being <b>verified in real-time</b> (not relying on model memory) — verified sectors are shown on the left.",
+    "useAiHint": "You can also click 'Let AI break down this sector' in the top right to have your own AI map out the value chain using the 7-dimension framework."
+  },
+  "components": {
+    "askAi": {
+      "label": "Ask AI",
+      "title": "Ask AI · Page Context",
+      "contextHint": "Page context that will be sent to AI with your question:",
+      "goSetupAi": "Connect Your AI (Subscription / API)",
+      "disclaimer": "Analysis conclusions are provided by your own configured AI. This product only packages the page data as context and lets AI call data tools. <b>No calibration, no endorsement, no responsibility for results.</b>",
+      "aiDisclaimer": "AI can answer based on this page's context and by calling A-share quote/valuation/report data on its own. Conclusions are from your model, <b>not investment advice</b>.",
+      "dataSource": "Data source",
+      "thinking": "AI is thinking / fetching data…",
+      "inputPlaceholder": "Ask about this page's content…",
+      "savedToNotes": "Saved to Notes",
+      "saveToNotes": "Save to Notes",
+      "conversation": "Conversation",
+      "chatFailed": "Chat failed",
+      "toolQueryQuote": "Query Quotes",
+      "toolQueryValuation": "Query Valuation",
+      "toolQueryReports": "Query Reports",
+      "toolQueryNews": "Query News"
+    },
+    "saveNote": {
+      "saved": "Saved to Notes",
+      "save": "Save to Notes"
+    },
+    "disclaimer": {
+      "full": "Vibe-Research is a neutral information aggregation and AI integration tool. Rankings (consecutive limit-ups / turnover, etc.) are all <b>objective public data</b>; this product <b>only presents facts — no stock picks, no predictions, no buy/sell timing, no investment advice</b>. All analysis directions within the dashboard are provided by your own configured AI and are not affiliated with this product. Please verify independently and make your own decisions. Invest at your own risk.",
+      "compact": "Vibe-Research only presents objective public data and rankings. No stock picks, no predictions, not investment advice."
+    },
+    "earnings": {
+      "revenueHighGrowth": "Revenue High Growth",
+      "revenuePositiveGrowth": "Revenue Positive Growth",
+      "revenueDecline": "Revenue Decline",
+      "profitFasterThanRevenue": "Profit growth faster than revenue",
+      "profitSlowerThanRevenue": "Profit growth slower than revenue",
+      "highRoe": "High ROE {{value}}%",
+      "midRoe": "Mid ROE {{value}}%",
+      "lowRoe": "Low ROE {{value}}%",
+      "peLow": "PE Low percentile {{value}}%",
+      "peMid": "PE Mid percentile {{value}}%",
+      "peHigh": "PE High percentile {{value}}%"
+    },
+    "errorBoundary": {
+      "fallback": "Something went wrong"
+    }
+  },
+  "common": {
+    "buttons": {
+      "add": "Add",
+      "save": "Save",
+      "clear": "Clear",
+      "refresh": "Refresh",
+      "delete": "Delete",
+      "download": "Download",
+      "record": "Record",
+      "query": "Search",
+      "remove": "Remove",
+      "cancel": "Cancel",
+      "confirm": "Confirm"
+    },
+    "statuses": {
+      "loading": "Loading…",
+      "noData": "No data available",
+      "fetching": "Fetching…",
+      "uploading": "Uploading…",
+      "saving": "Saving…",
+      "refreshing": "Refreshing…"
+    },
+    "errors": {
+      "networkError": "Cannot connect to backend. Please start the backend first (uvicorn app:app --port 8900)",
+      "authRequired": "Backend auth enabled (VR_API_KEY): Please fill in the backend access key at the bottom of the Connect AI page",
+      "noResponse": "No response from backend",
+      "aiNotConfigured": "AI not connected yet. Please configure in 'Connect AI' first",
+      "downloadFailed": "Download failed (HTTP {{status}})",
+      "generic": "Something went wrong"
+    },
+    "formats": {
+      "billion": "B",
+      "billionChinese": "亿",
+      "trillion": "T",
+      "trillionChinese": "万亿",
+      "wan": "W",
+      "hkd": "HKD",
+      "krw": "KRW",
+      "usd": "USD",
+      "hkStock": "HK Stock",
+      "krStock": "Korean Stock",
+      "usStock": "US Stock",
+      "year": "yr",
+      "yearChinese": "年",
+      "yuan": "CNY",
+      "yuanChinese": "元",
+      "count": "{{count}}",
+      "date": "{{date}}",
+      "updated": "Updated {{time}}",
+      "ago": "{{time}} ago"
+    }
+  }
+}

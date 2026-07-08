@@ -1,5 +1,7 @@
-// Vibe-Research 后端 API 客户端。/api → vite 代理到本地 FastAPI（默认 8900）。
-// 后端未启动或数据源异常时抛 ApiError，页面据此优雅降级。
+// Vibe-Research backend API client. /api → vite proxy to local FastAPI (default 8900).
+// Throws ApiError when backend is down or data source has issues.
+
+import i18n from '@/i18n';
 
 export class ApiError extends Error {
   constructor(message: string, readonly status: number) {
@@ -7,7 +9,6 @@ export class ApiError extends Error {
   }
 }
 
-// 后端访问密钥（对应后端部署时的 VR_API_KEY，公网部署防蹭用）。只存本地浏览器。
 const ACCESS_KEY = "vr-access-key";
 
 export function loadAccessKey(): string {
@@ -23,7 +24,7 @@ export function saveAccessKey(key: string) {
     if (key) localStorage.setItem(ACCESS_KEY, key);
     else localStorage.removeItem(ACCESS_KEY);
   } catch {
-    /* 隐私模式等场景 localStorage 不可用 */
+    /* localStorage unavailable in private mode etc. */
   }
 }
 
@@ -36,10 +37,9 @@ export interface MyReport {
   id: string; name: string; industry: string; size: number; ext: string; ts: number;
 }
 
-// 下载/预览研报：带鉴权头 fetch → blob → 触发浏览器下载（<a download> 无法带 Authorization，故走 blob）。
 export async function downloadReport(id: string, name: string): Promise<void> {
   const resp = await fetch(`/api/myreports/file/${id}`, { headers: authHeaders() });
-  if (!resp.ok) throw new ApiError(`下载失败 HTTP ${resp.status}`, resp.status);
+  if (!resp.ok) throw new ApiError(i18n.t('common.errors.downloadFailed', { status: resp.status }), resp.status);
   const blob = await resp.blob();
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
@@ -63,17 +63,17 @@ async function request<T>(path: string, method: "GET" | "POST" | "DELETE" = "GET
   try {
     resp = await fetch(`/api${path}`, opts);
   } catch {
-    throw new ApiError("连接不到后端，请先启动 backend（uvicorn app:app --port 8900）", 0);
+    throw new ApiError(i18n.t('common.errors.networkError'), 0);
   }
   let payload: any = null;
   try {
     payload = await resp.json();
   } catch {
-    /* 非 JSON 响应 */
+    /* non-JSON response */
   }
   if (!resp.ok) {
     if (resp.status === 401) {
-      throw new ApiError("后端开启了访问鉴权（VR_API_KEY）：请在「接入 AI」页底部填写后端访问密钥", 401);
+      throw new ApiError(i18n.t('common.errors.authRequired'), 401);
     }
     throw new ApiError(payload?.detail || `HTTP ${resp.status}`, resp.status);
   }
@@ -140,7 +140,6 @@ export interface MarketOverview {
   sentiment: MarketSentiment; sectors: SectorFlow[]; updated: string;
 }
 
-// 短线情绪：连板梯队 / 最高连板 / 炸板率 / 封板率 / 晋级率 / 涨跌停家数 + 连板股清单（客观公开榜单）
 export interface EmotionTier { boards: number; count: number; plus: boolean }
 export interface LianbanStock {
   code: string; name: string; boards: number;
@@ -156,7 +155,6 @@ export interface ShortTermEmotion {
   yzt_count: number;
 }
 
-// 全市场成交额榜（客观公开榜单）
 export interface TurnoverStock {
   code: string; name: string;
   price: number | null; pct: number | null;
@@ -191,7 +189,6 @@ export interface PortfolioData {
   updated: string; last_refresh: string | null;
 }
 
-// 资金面 / 筹码 / 信号（v3.3 并入，均为「用户查的那只股」的公开数据）
 export interface MarginRow { date: string; rzye: number; rzmre: number; rzche: number; rqye: number; rqmcl: number; rzrqye: number }
 export interface BlockTradeRow { date: string; price: number; close: number; premium_pct: number; vol: number; amount: number; buyer: string; seller: string }
 export interface HolderRow { date: string; holder_num: number; change_ratio: number; avg_shares: number }
@@ -212,7 +209,6 @@ export interface QaRow { company: string; question: string; answer: string | nul
 export interface IndustryRow { rank: number; name: string; change_pct: number; code: string; up_count: number; down_count: number }
 export interface IndustryData { top: IndustryRow[]; bottom: IndustryRow[]; total: number }
 
-// 全球市场（美股 / 港股，移植自 global-stock-data · 东财域内源）
 export interface GlobalIndex {
   key: string; name: string; region: string;
   price: number | null; change_pct: number | null;

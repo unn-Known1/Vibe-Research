@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from 'react-i18next';
 import { Trash2, ChevronDown, ChevronRight, NotebookPen } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -6,6 +7,7 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { Disclaimer } from "@/components/ui/Disclaimer";
 import { loadNotes, deleteNote, clearNotes, type Note } from "@/lib/notes";
+import i18n from "@/i18n";
 
 const KIND_COLOR: Record<string, string> = {
   复盘: "bg-primary/15 text-primary",
@@ -14,20 +16,21 @@ const KIND_COLOR: Record<string, string> = {
 };
 
 export function Notes() {
+  const { t } = useTranslation();
   const [notes, setNotes] = useState<Note[]>(loadNotes);
   const [openId, setOpenId] = useState<string | null>(null);
 
-  const fmt = (ts: number) => new Date(ts).toLocaleString("zh-CN", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" });
+  const fmt = (ts: number) => new Date(ts).toLocaleDateString(i18n.language === 'zh' ? 'zh-CN' : 'en-US', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
 
   return (
     <div>
       <PageHeader
-        title="研究记录"
-        subtitle="把 AI 复盘 / 要点 / 问答沉淀在本地，随时回看。数据只存本地、不上传。"
+        title={t('notes.title')}
+        subtitle={t('notes.subtitle')}
         actions={notes.length > 0 && (
-          <button onClick={() => { if (confirm("清空所有研究记录？")) { clearNotes(); setNotes([]); } }}
+          <button onClick={() => { if (confirm(t('notes.clearConfirm'))) { clearNotes(); setNotes([]); } }}
             className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm text-muted-foreground hover:text-destructive">
-            <Trash2 className="h-4 w-4" /> 清空
+            <Trash2 className="h-4 w-4" /> {t('notes.clearAll')}
           </button>
         )}
       />
@@ -36,7 +39,7 @@ export function Notes() {
         <GlassCard>
           <div className="flex flex-col items-center gap-2 py-10 text-center text-sm text-muted-foreground">
             <NotebookPen className="h-8 w-8 text-muted-foreground/40" />
-            还没有记录。在「每日复盘」「资讯雷达」或「问 AI」里点 <b className="text-foreground">「存入沉淀」</b> 保存分析结果。
+            <span dangerouslySetInnerHTML={{ __html: t('notes.emptyHint') }} />
           </div>
         </GlassCard>
       ) : (
@@ -52,7 +55,7 @@ export function Notes() {
                     <span className="flex-1 truncate text-sm font-medium">{n.title}</span>
                     <span className="shrink-0 font-mono text-[11px] text-muted-foreground/60">{fmt(n.ts)}</span>
                   </button>
-                  <button onClick={() => setNotes(deleteNote(n.id))} className="shrink-0 text-muted-foreground/60 hover:text-destructive" title="删除">
+                  <button onClick={() => setNotes(deleteNote(n.id))} className="shrink-0 text-muted-foreground/60 hover:text-destructive" title={t('notes.delete')}>
                     <Trash2 className="h-3.5 w-3.5" />
                   </button>
                 </div>
